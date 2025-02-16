@@ -1,0 +1,85 @@
+ <!DOCTYPE html><html><head>
+    <title>「oto」</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Cache-control" content="public">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="css/gsts.css" rel="stylesheet" type="text/css">
+    <link rel="icon" href="logo.gif" type="gif">
+    <script src="css/disable-click"></script>
+    <script src="js/disable-inspect.js"></script>
+    
+        <script>
+            function removeOverlay() {
+                var overlay = document.getElementById("overlay");
+                overlay.style.display = "none";
+            }
+    
+            function playMusic() {
+                var audio = new Audio("https://kappa.lol/GILcm");
+             audio.play();
+            }
+        </script>      
+    
+      <!-- click to enter -->
+    
+    
+    
+      <body>
+        <div id="overlay" onclick="removeOverlay()">
+            <div class="sparkle"><a>click to enter</a></div>
+        </div>
+    
+    
+    
+                <h1 class="header">
+                    <a href="discord://-/users/1043247699077628025" style="text-decoration: none;color: white;" target="_BLANK"><span class="sparkle">oto</span></a>
+                </h1>
+    
+                 <!-- typewriter -->
+                <div class="typewriter" id="typewriter"></div>
+                <script data-cfasync="false" src="js/email-decode.min.js"></script><script src="js/typewriter.js"></script>
+                <script>
+     var typewriter = new Typewriter(document.getElementById('typewriter'), {
+          strings: ['on top?', 'skid4life', 'dev'],
+          delay: 'natural',
+          cursor: '|',
+          autoStart: true,
+          loop: true
+        });
+                </script>
+    
+     <!-- video -->
+     <video id="myVideo" loop="">
+    </video>
+    
+    <script>
+      var videoClicked = false;
+      var videoSources = [
+          "https://kappa.lol/GILcm",
+          "https://kappa.lol/3UE18"
+      ];
+    
+      function getRandomVideoSource() {
+          return videoSources[Math.floor(Math.random() * videoSources.length)];
+      }
+    
+      document.body.addEventListener("click", function () {
+          if (!videoClicked) {
+              var video = document.getElementById("myVideo");
+              video.style.display = "block";
+              video.src = getRandomVideoSource();
+              video.play();
+              videoClicked = true;
+          }
+      });
+    </script>
+    
+                <!-- visuals -->
+    
+    </div>
+    <script src="js/cursorsparkle.js"></script>
+    <script>fairyDustCursor();</script>
+    <footer>@ oto.bio i love skidding</footer>
+    
+    </body><!-- header --></html>
