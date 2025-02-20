@@ -96,6 +96,8 @@
         </div>
         <input type="text" id="textInput" placeholder="Enter text">
         <button onclick="clearCanvas()">Clear</button>
+        <button onclick="exportCanvas()">Export</button>
+        <input type="file" id="importFile" accept=".skibidi" onchange="importCanvas(event)">
         <div class="color-history" id="colorHistory"></div>
     </div>
     <div id="canvas-container">
@@ -201,6 +203,35 @@
             zoomLevel = Math.min(Math.max(0.5, zoomLevel), 3); // Limiter le niveau de zoom entre 0.5 et 3
             canvas.style.transform = `scale(${zoomLevel})`; // Appliquer le zoom
             renderCanvas(); // Re-rendre le canvas pour mettre à jour le texte
+        }
+        
+
+        function exportCanvas() {
+            const dataStr = JSON.stringify(grid);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "pixel_canvas.skibidi";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function importCanvas(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    grid = JSON.parse(e.target.result);
+                    localStorage.setItem("pixelCanvas", JSON.stringify(grid));
+                    renderCanvas();
+                } catch (error) {
+                    alert("Invalid file format!");
+                }
+            };
+            reader.readAsText(file);
         }
 
         canvasContainer.addEventListener("wheel", zoomCanvas); // Ajouter l'événement de zoom
