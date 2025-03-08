@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundTag</title>
+    <style>
+        /* Global styles with Apple-inspired design */
+
+        :root {
+            --primary-bg: #000000;
+            --accent-color: #0071e3;
+            --text-color: #ffffff;
+            --secondary-text: #86868b;
+            --gradient-start: #0071e3;
+            --gradient-end: #00c6fb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* Overlay styles */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1.2s cubic-bezier(0.215, 0.610, 0.355, 1.000);
+            cursor: pointer; /* Add pointer cursor to indicate clickability */
+        }
+
+        .overlay-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .overlay-logo {
+            font-size: 36px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 20px;
+            color: white;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 1s forwards 0.5s;
+        }
+
+        .overlay-message {
+            padding: 15px 30px;
+            color: var(--secondary-text);
+            font-size: 18px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 1s forwards 1s;
+            text-align: center;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Main content styles */
+        .container {
+            display: none;
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        /* Header section */
+        header {
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        /* Hero section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+            z-index: -1;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 900px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 72px;
+            font-weight: 700;
+            letter-spacing: -1.5px;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1s forwards 0.3s;
+        }
+
+        .tagline {
+            font-size: 28px;
+            font-weight: 400;
+            color: var(--text-color);
+            margin-bottom: 60px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1s forwards 0.6s;
+        }
+
+        .product-showcase {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 40px 0;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1s forwards 0.9s;
+        }
+
+        .product-image-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #0c0c0c, #0f0f0f);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .product-image {
+            width: 120px;
+            height: auto;
+            object-fit: contain;
+            transition: transform 1s ease;
+            z-index: 2;
+            filter: drop-shadow(0 10px 15px rgba(0, 113, 227, 0.4));
+        }
+
+        .glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle at center, rgba(0, 113, 227, 0.2) 0%, transparent 70%);
+            filter: blur(30px);
+            z-index: 1;
+        }
+
+        .product-description {
+            margin-left: 40px;
+            text-align: left;
+            max-width: 400px;
+        }
+
+        .product-title {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .product-text {
+            color: var(--secondary-text);
+            line-height: 1.6;
+            font-size: 18px;
+        }
+
+        .cta-section {
+            margin-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1s forwards 1.2s;
+        }
+
+        .cta {
+            padding: 18px 50px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 113, 227, 0.4);
+            text-decoration: none;
+        }
+
+        .cta:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 113, 227, 0.6);
+        }
+
+        .contact {
+            font-size: 18px;
+            color: var(--secondary-text);
+            margin-top: 20px;
+        }
+
+        .contact strong {
+            color: var(--text-color);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 20px;
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            font-size: 22px;
+            color: var(--secondary-text);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 60px auto;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .feature-card {
+            background: linear-gradient(145deg, #0e0e0e, #0a0a0a);
+            border-radius: 20px;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+
+        .feature-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .feature-description {
+            color: var(--secondary-text);
+            line-height: 1.6;
+        }
+
+        /* Usage examples section */
+        .uses {
+            padding: 100px 20px;
+            background: #050505;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .use-cases {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1200px;
+        }
+
+        .use-case {
+            background: #0a0a0a;
+            border-radius: 15px;
+            padding: 25px;
+            width: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .use-case:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 113, 227, 0.1);
+        }
+
+        .use-case-icon {
+            font-size: 30px;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .use-case-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .use-case-description {
+            color: var(--secondary-text);
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 20px;
+            background: #000000;
+            text-align: center;
+        }
+
+        .copyright {
+            color: var(--secondary-text);
+            font-size: 14px;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 48px;
+            }
+
+            .tagline {
+                font-size: 22px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-showcase {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .product-description {
+                margin-left: 0;
+                margin-top: 30px;
+                text-align: center;
+            }
+        }
+
+        /* Animation for the product image */
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px) rotate(5deg);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Glass effect */
+        .glass-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(0, 113, 227, 0.1) 0%, transparent 80%);
+            border-radius: 50%;
+        }
+
+        /* Pulsing effect for click cue */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 113, 227, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(0, 113, 227, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 113, 227, 0);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+    <link rel="icon" type="image/png" href="logo.png" />
+</head>
+<body>
+    <!-- Overlay with click to proceed - now clickable anywhere -->
+    <div class="overlay" id="overlay">
+        <div class="overlay-content">
+            <div class="overlay-logo">SoundTag</div>
+            <div class="overlay-message pulse">Cliquez n'importe où pour découvrir</div>
+        </div>
+    </div>
+
+    <!-- Main content container -->
+    <div class="container" id="main-content">
+        <!-- Header -->
+        <header>
+            <div class="logo">SoundTag</div>
+        </header>
+
+        <!-- Hero section -->
+        <section class="hero">
+            <div class="hero-bg"></div>
+            <div class="hero-content">
+                <h1>SoundTag</h1>
+                <p class="tagline">Une étiquette NFC qui joue un son en un toucher</p>
+
+                <div class="product-showcase">
+                    <div class="product-image-container">
+                        <div class="glass-bg"></div>
+                        <div class="glow"></div>
+                        <img src="https://kappa.lol/4HuJS" alt="SoundTag NFC Sticker" class="product-image floating">
+                    </div>
+
+                    <div class="product-description">
+                        <h3 class="product-title">Gomette intelligente</h3>
+                        <p class="product-text">Une simple gomette NFC qui déclenche instantanément un son personnalisé lorsque vous l'approchez de votre smartphone.</p>
+                    </div>
+                </div>
+
+                <div class="cta-section">
+                    <a href="mailto:soundtag@proton.me?subject=Achat%20de%20SoundTag" class="cta">Acheter Maintenant</a>
+                    <p class="contact">Pour plus d'informations : <strong>soundtag@proton.me</strong></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features section -->
+        <section class="features">
+            <h2 class="section-title">Caractéristiques</h2>
+            <p class="section-subtitle">Une technologie simple et élégante pour une expérience sonore unique</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔊</div>
+                    <h3 class="feature-title">Son Instantané</h3>
+                    <p class="feature-description">Déclenchez automatiquement des sons personnalisés d'un simple toucher de votre appareil.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title">Compatibilité NFC</h3>
+                    <p class="feature-description">Fonctionne avec tous les smartphones modernes équipés de la technologie NFC.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3 class="feature-title">Design Discret</h3>
+                    <p class="feature-description">Une gomette discrète et élégante qui s'intègre parfaitement à votre environnement.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use cases section -->
+        <section class="uses">
+            <h2 class="section-title">Utilisations</h2>
+            <p class="section-subtitle">Des possibilités infinies pour personnaliser votre environnement</p>
+
+            <div class="use-cases">
+                <div class="use-case">
+                    <div class="use-case-icon">🏠</div>
+                    <h3 class="use-case-title">Maison</h3>
+                    <p class="use-case-description">Placez un SoundTag sur votre entrée pour que vos invités soient accueillis par un message personnalisé.</p>
+                </div>
+
+                <div class="use-case">
+                    <div class="use-case-icon">🎁</div>
+                    <h3 class="use-case-title">Cadeaux</h3>
+                    <p class="use-case-description">Ajoutez un SoundTag à un cadeau pour une surprise sonore et un message personnel.</p>
+                </div>
+
+                <div class="use-case">
+                    <div class="use-case-icon">💼</div>
+                    <h3 class="use-case-title">Bureau</h3>
+                    <p class="use-case-description">Utilisez SoundTag pour partager rapidement des informations ou des rappels importants.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p class="copyright">© 2025 SoundTag. Tous droits réservés.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Function to handle the entrance
+        function handleEntrance() {
+            let context = new (window.AudioContext || window.webkitAudioContext)();
+            let gainNode = context.createGain();
+            gainNode.gain.value = 2.0;
+
+            // Fetch and play the audio
+            fetch('https://kappa.lol/iXtQc')
+                .then(response => response.arrayBuffer())
+                .then(data => context.decodeAudioData(data))
+                .then(buffer => {
+                    let source = context.createBufferSource();
+                    source.buffer = buffer;
+                    source.connect(gainNode);
+                    gainNode.connect(context.destination);
+                    source.start(0);
+                })
+                .catch(err => console.error('Error loading audio:', err));
+
+            // Fade out overlay and show main content
+            document.getElementById('overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+
+                // Add scroll animations
+                const animateElements = document.querySelectorAll('.feature-card, .use-case');
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = 1;
+                            entry.target.style.transform = 'translateY(0)';
+                        }
+                    });
+                });
+
+                animateElements.forEach(el => {
+                    el.style.opacity = 0;
+                    el.style.transform = 'translateY(30px)';
+                    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    observer.observe(el);
+                });
+            }, 1200);
+        }
+
+        // Now the entire overlay is clickable
+        document.getElementById('overlay').addEventListener('click', handleEntrance, { once: true });
+
+        // Add subtle parallax effect on scroll
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const heroContent = document.querySelector('.hero-content');
+
+            if (heroContent) {
+                heroContent.style.transform = `translateY(${scrollY * 0.2}px)`;
+            }
+        });
+    </script>
+</body>
+</html>
